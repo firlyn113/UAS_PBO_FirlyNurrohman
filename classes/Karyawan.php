@@ -25,8 +25,31 @@ abstract class Karyawan {
     }
 
     /**
-     * Method Getter untuk mengambil nilai atribut
+     * Method untuk mendapatkan jumlah hari kerja (PUBLIC agar bisa diakses dari luar)
+     * Jika hari_kerja_masuk adalah tanggal, konversi ke jumlah hari
      */
+    public function getJumlahHariKerja() {
+        // Jika hari_kerja_masuk adalah angka (integer), langsung return
+        if (is_numeric($this->hari_kerja_masuk)) {
+            return (int)$this->hari_kerja_masuk;
+        }
+        
+        // Jika hari_kerja_masuk adalah tanggal, hitung selisih hari
+        // Asumsi: 1 bulan = 22 hari kerja
+        $tanggal_masuk = strtotime($this->hari_kerja_masuk);
+        $tanggal_sekarang = time();
+        $selisih_hari = floor(($tanggal_sekarang - $tanggal_masuk) / (60 * 60 * 24));
+        
+        // Konversi ke hari kerja (asumsi 5 hari kerja per minggu)
+        $minggu = floor($selisih_hari / 7);
+        $sisa_hari = $selisih_hari % 7;
+        $hari_kerja = ($minggu * 5) + min($sisa_hari, 5);
+        
+        // Minimal 1 hari, maksimal 30 hari
+        return max(1, min(30, $hari_kerja));
+    }
+
+    // Getter
     public function getIdKaryawan() {
         return $this->id_karyawan;
     }
@@ -47,9 +70,7 @@ abstract class Karyawan {
         return $this->gaji_dasar_per_hari;
     }
 
-    /**
-     * Method Setter untuk mengubah nilai atribut
-     */
+    // Setter
     public function setIdKaryawan($id_karyawan) {
         $this->id_karyawan = $id_karyawan;
     }
@@ -74,16 +95,11 @@ abstract class Karyawan {
      * Method abstract (wajib diimplementasikan oleh class anak)
      */
     abstract public function hitungGajiBersih();
-
     abstract public function tampilProfilKaryawan();
 
-  
-    protected function hitungGajiKotor() {
-        $hari_kerja_per_bulan = 22;
-        return $this->gaji_dasar_per_hari * $hari_kerja_per_bulan;
-    }
-
-  
+    /**
+     * Method untuk menampilkan info dasar karyawan
+     */
     protected function tampilInfoDasar() {
         echo "ID Karyawan: " . $this->id_karyawan . "<br>";
         echo "Nama: " . $this->nama_karyawan . "<br>";

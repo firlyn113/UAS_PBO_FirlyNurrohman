@@ -1,25 +1,21 @@
 <?php
-
+/**
+ * File: KaryawanKontrak.php
+ * Subclass untuk karyawan dengan status Kontrak
+ */
 
 require_once 'Karyawan.php';
 
 class KaryawanKontrak extends Karyawan {
-    // Atribut spesifik untuk karyawan kontrak
     private $durasi_kontrak_bulan;
     private $agensi_penyalur;
     
-    /**
-     * Constructor
-     */
     public function __construct($id_karyawan, $nama_karyawan, $departemen, $hari_kerja_masuk, $gaji_dasar_per_hari, $durasi_kontrak_bulan, $agensi_penyalur) {
-        // Panggil constructor parent
         parent::__construct($id_karyawan, $nama_karyawan, $departemen, $hari_kerja_masuk, $gaji_dasar_per_hari);
-        
         $this->durasi_kontrak_bulan = $durasi_kontrak_bulan;
         $this->agensi_penyalur = $agensi_penyalur;
     }
     
-    // Getter untuk atribut spesifik
     public function getDurasiKontrakBulan() {
         return $this->durasi_kontrak_bulan;
     }
@@ -28,7 +24,6 @@ class KaryawanKontrak extends Karyawan {
         return $this->agensi_penyalur;
     }
     
-    // Setter untuk atribut spesifik
     public function setDurasiKontrakBulan($durasi_kontrak_bulan) {
         $this->durasi_kontrak_bulan = $durasi_kontrak_bulan;
     }
@@ -37,23 +32,39 @@ class KaryawanKontrak extends Karyawan {
         $this->agensi_penyalur = $agensi_penyalur;
     }
     
-    
+    /**
+     * hitungGajiBersih() - Menggunakan jumlah hari kerja
+     */
     public function hitungGajiBersih() {
-        return $this->hari_kerja_masuk * $this->gaji_dasar_per_hari;
+        $jumlah_hari = $this->getJumlahHariKerja();
+        return $jumlah_hari * $this->gaji_dasar_per_hari;
+    }
+    
+    public function tampilProfilKaryawan() {
+        // Tidak digunakan di view card
     }
     
     /**
-     * Implementasi method abstract tampilProfilKaryawan()
+     * Method untuk mengambil data karyawan kontrak dari database
      */
-    public function tampilProfilKaryawan() {
-        echo "<div style='border:1px solid #ccc; padding:10px; margin:10px 0;'>";
-        echo "<h3>Profil Karyawan Kontrak</h3>";
-        $this->tampilInfoDasar();
-        echo "<strong>Jenis Karyawan:</strong> Kontrak<br>";
-        echo "<strong>Durasi Kontrak:</strong> " . $this->durasi_kontrak_bulan . " bulan<br>";
-        echo "<strong>Agensi Penyalur:</strong> " . $this->agensi_penyalur . "<br>";
-        echo "<strong style='color:green;'>Gaji Bersih:</strong> Rp " . number_format($this->hitungGajiBersih(), 0, ',', '.') . "<br>";
-        echo "</div>";
+    public static function getDataForView($koneksi, $filter = '') {
+        $query = "SELECT * FROM tabel_karyawan WHERE jenis_karyawan = 'Kontrak'";
+        
+        if (!empty($filter)) {
+            $filter = mysqli_real_escape_string($koneksi, $filter);
+            $query .= " AND (nama_karyawan LIKE '%$filter%' OR departemen LIKE '%$filter%' OR agensi_penyalur LIKE '%$filter%')";
+        }
+        
+        $query .= " ORDER BY id_karyawan DESC";
+        
+        $result = mysqli_query($koneksi, $query);
+        $data = [];
+        
+        while ($row = mysqli_fetch_assoc($result)) {
+            $data[] = $row;
+        }
+        
+        return $data;
     }
 }
 ?>

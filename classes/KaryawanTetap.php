@@ -1,25 +1,21 @@
 <?php
-
+/**
+ * File: KaryawanTetap.php
+ * Subclass untuk karyawan dengan status Tetap
+ */
 
 require_once 'Karyawan.php';
 
 class KaryawanTetap extends Karyawan {
-    // Atribut spesifik untuk karyawan tetap
     private $tunjangan_kesehatan;
     private $opsi_saham_id;
     
-    /**
-     * Constructor
-     */
     public function __construct($id_karyawan, $nama_karyawan, $departemen, $hari_kerja_masuk, $gaji_dasar_per_hari, $tunjangan_kesehatan, $opsi_saham_id) {
-        // Panggil constructor parent
         parent::__construct($id_karyawan, $nama_karyawan, $departemen, $hari_kerja_masuk, $gaji_dasar_per_hari);
-        
         $this->tunjangan_kesehatan = $tunjangan_kesehatan;
         $this->opsi_saham_id = $opsi_saham_id;
     }
     
-    // Getter untuk atribut spesifik
     public function getTunjanganKesehatan() {
         return $this->tunjangan_kesehatan;
     }
@@ -28,7 +24,6 @@ class KaryawanTetap extends Karyawan {
         return $this->opsi_saham_id;
     }
     
-    // Setter untuk atribut spesifik
     public function setTunjanganKesehatan($tunjangan_kesehatan) {
         $this->tunjangan_kesehatan = $tunjangan_kesehatan;
     }
@@ -38,27 +33,38 @@ class KaryawanTetap extends Karyawan {
     }
     
     /**
-     * Implementasi method abstract hitungGajiBersih()
-     * Logika: gaji bersih = (hari_kerja_masuk * gaji_dasar_per_hari) + tunjangan_kesehatan
-     * Mendapat tambahan tunjangan kesehatan
+     * hitungGajiBersih() - Menggunakan jumlah hari kerja + tunjangan
      */
     public function hitungGajiBersih() {
-        return ($this->hari_kerja_masuk * $this->gaji_dasar_per_hari) + $this->tunjangan_kesehatan;
+        $jumlah_hari = $this->getJumlahHariKerja();
+        return ($jumlah_hari * $this->gaji_dasar_per_hari) + $this->tunjangan_kesehatan;
+    }
+    
+    public function tampilProfilKaryawan() {
+        // Tidak digunakan di view card
     }
     
     /**
-     * Implementasi method abstract tampilProfilKaryawan()
+     * Method untuk mengambil data karyawan tetap dari database
      */
-    public function tampilProfilKaryawan() {
-        echo "<div style='border:1px solid #4CAF50; padding:10px; margin:10px 0;'>";
-        echo "<h3>Profil Karyawan Tetap</h3>";
-        $this->tampilInfoDasar();
-        echo "<strong>Jenis Karyawan:</strong> Tetap<br>";
-        echo "<strong>Tunjangan Kesehatan:</strong> Rp " . number_format($this->tunjangan_kesehatan, 0, ',', '.') . "<br>";
-        echo "<strong>Opsi Saham ID:</strong> " . $this->opsi_saham_id . "<br>";
-        echo "<strong>Gaji Dasar (Hari x Gaji):</strong> Rp " . number_format($this->hari_kerja_masuk * $this->gaji_dasar_per_hari, 0, ',', '.') . "<br>";
-        echo "<strong style='color:green;'>Gaji Bersih + Tunjangan:</strong> Rp " . number_format($this->hitungGajiBersih(), 0, ',', '.') . "<br>";
-        echo "</div>";
+    public static function getDataForView($koneksi, $filter = '') {
+        $query = "SELECT * FROM tabel_karyawan WHERE jenis_karyawan = 'Tetap'";
+        
+        if (!empty($filter)) {
+            $filter = mysqli_real_escape_string($koneksi, $filter);
+            $query .= " AND (nama_karyawan LIKE '%$filter%' OR departemen LIKE '%$filter%' OR opsi_saham_id LIKE '%$filter%')";
+        }
+        
+        $query .= " ORDER BY id_karyawan DESC";
+        
+        $result = mysqli_query($koneksi, $query);
+        $data = [];
+        
+        while ($row = mysqli_fetch_assoc($result)) {
+            $data[] = $row;
+        }
+        
+        return $data;
     }
 }
 ?>
