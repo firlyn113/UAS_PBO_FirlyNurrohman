@@ -37,13 +37,18 @@ class KaryawanTetap extends Karyawan {
         $this->opsi_saham_id = $opsi_saham_id;
     }
     
-    
+    /**
+     * Implementasi method abstract hitungGajiBersih()
+     * Logika: gaji bersih = (hari_kerja_masuk * gaji_dasar_per_hari) + tunjangan_kesehatan
+     * Mendapat tambahan tunjangan kesehatan
+     */
     public function hitungGajiBersih() {
-        $gaji_kotor = $this->hitungGajiKotor();
-        $potongan_bpjs = $gaji_kotor * 0.025; // Potongan BPJS 2.5%
-        return ($gaji_kotor - $potongan_bpjs) + $this->tunjangan_kesehatan;
+        return ($this->hari_kerja_masuk * $this->gaji_dasar_per_hari) + $this->tunjangan_kesehatan;
     }
-   
+    
+    /**
+     * Implementasi method abstract tampilProfilKaryawan()
+     */
     public function tampilProfilKaryawan() {
         echo "<div style='border:1px solid #4CAF50; padding:10px; margin:10px 0;'>";
         echo "<h3>Profil Karyawan Tetap</h3>";
@@ -51,9 +56,8 @@ class KaryawanTetap extends Karyawan {
         echo "<strong>Jenis Karyawan:</strong> Tetap<br>";
         echo "<strong>Tunjangan Kesehatan:</strong> Rp " . number_format($this->tunjangan_kesehatan, 0, ',', '.') . "<br>";
         echo "<strong>Opsi Saham ID:</strong> " . $this->opsi_saham_id . "<br>";
-        echo "<strong>Gaji Kotor:</strong> Rp " . number_format($this->hitungGajiKotor(), 0, ',', '.') . "<br>";
-        echo "<strong>Potongan BPJS (2.5%):</strong> Rp " . number_format($this->hitungGajiKotor() * 0.025, 0, ',', '.') . "<br>";
-        echo "<strong style='color:green;'>Gaji Bersih:</strong> Rp " . number_format($this->hitungGajiBersih(), 0, ',', '.') . "<br>";
+        echo "<strong>Gaji Dasar (Hari x Gaji):</strong> Rp " . number_format($this->hari_kerja_masuk * $this->gaji_dasar_per_hari, 0, ',', '.') . "<br>";
+        echo "<strong style='color:green;'>Gaji Bersih + Tunjangan:</strong> Rp " . number_format($this->hitungGajiBersih(), 0, ',', '.') . "<br>";
         echo "</div>";
     }
 }

@@ -37,11 +37,9 @@ class KaryawanKontrak extends Karyawan {
         $this->agensi_penyalur = $agensi_penyalur;
     }
     
-   
+    
     public function hitungGajiBersih() {
-        $gaji_kotor = $this->hitungGajiKotor();
-        $potongan = $gaji_kotor * 0.05; // Potongan 5%
-        return $gaji_kotor - $potongan;
+        return $this->hari_kerja_masuk * $this->gaji_dasar_per_hari;
     }
     
     /**
@@ -49,13 +47,11 @@ class KaryawanKontrak extends Karyawan {
      */
     public function tampilProfilKaryawan() {
         echo "<div style='border:1px solid #ccc; padding:10px; margin:10px 0;'>";
-        echo "<h3>Profiling Karyawan Kontrak</h3>";
+        echo "<h3>Profil Karyawan Kontrak</h3>";
         $this->tampilInfoDasar();
         echo "<strong>Jenis Karyawan:</strong> Kontrak<br>";
         echo "<strong>Durasi Kontrak:</strong> " . $this->durasi_kontrak_bulan . " bulan<br>";
         echo "<strong>Agensi Penyalur:</strong> " . $this->agensi_penyalur . "<br>";
-        echo "<strong>Gaji Kotor:</strong> Rp " . number_format($this->hitungGajiKotor(), 0, ',', '.') . "<br>";
-        echo "<strong>Potongan (5%):</strong> Rp " . number_format($this->hitungGajiKotor() * 0.05, 0, ',', '.') . "<br>";
         echo "<strong style='color:green;'>Gaji Bersih:</strong> Rp " . number_format($this->hitungGajiBersih(), 0, ',', '.') . "<br>";
         echo "</div>";
     }

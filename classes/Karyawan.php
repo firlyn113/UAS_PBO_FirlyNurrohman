@@ -3,7 +3,7 @@
  * File: Karyawan.php
  * Abstract class Karyawan dengan atribut terenkapsulasi (protected)
  */
-require_once '../koneksi.php';
+require_once 'koneksi.php';
 
 abstract class Karyawan {
     // Atribut/properti terenkapsulasi (protected)
